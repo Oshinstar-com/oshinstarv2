@@ -4,15 +4,21 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:oshinstar/modules/authentication/code_verification.dart';
+
 class PhoneVerificationSignup extends StatefulWidget {
   @override
-  _PhoneVerificationSignupState createState() => _PhoneVerificationSignupState();
+  _PhoneVerificationSignupState createState() =>
+      _PhoneVerificationSignupState();
 }
 
 class _PhoneVerificationSignupState extends State<PhoneVerificationSignup> {
   String _countryCode = "+1";
   String? _countryFlag;
   String _phoneNumber = "";
+  bool _showCodeAgain = false;
+  bool _showGetHelp = false;
+  bool _showLogOut = false;
 
   @override
   void initState() {
@@ -38,12 +44,15 @@ class _PhoneVerificationSignupState extends State<PhoneVerificationSignup> {
     }
 
     if (permission == LocationPermission.deniedForever) {
-      return Future.error('Location permissions are permanently denied, we cannot request permissions.');
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
     }
 
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
 
-    final url = 'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.latitude}&longitude=${position.longitude}&localityLanguage=en';
+    final url =
+        'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.latitude}&longitude=${position.longitude}&localityLanguage=en';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -75,7 +84,6 @@ class _PhoneVerificationSignupState extends State<PhoneVerificationSignup> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-    
           children: [
             const Text(
               'Hey! We need to verify your account',
@@ -117,11 +125,87 @@ class _PhoneVerificationSignupState extends State<PhoneVerificationSignup> {
               ],
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Implement your verification code sending logic here
-              },
-              child: const Text('Send Verification Code'),
+            ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 500,
+                minWidth: 400,
+              ),
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.chat),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CodeVerificationScreen(phoneNumber: _phoneNumber,),
+                    ),
+                  );
+                },
+                label: const Text('Send Verification Code'),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Visibility(
+              visible: _showCodeAgain,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 500,
+                  minWidth: 400,
+                ),
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.chat),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () {
+                    // Implement your verification code sending logic here
+                  },
+                  label: Text('Send Code again to $_phoneNumber'),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Visibility(
+              visible: _showGetHelp,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 500,
+                  minWidth: 400,
+                ),
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.help),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.yellow[700],
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () {
+                    // Implement your verification code sending logic here
+                  },
+                  label: const Text('Get help'),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Visibility(
+              visible: _showLogOut,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 500,
+                  minWidth: 400,
+                ),
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Log out'),
+                ),
+              ),
             ),
           ],
         ),
