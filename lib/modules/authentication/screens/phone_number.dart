@@ -7,16 +7,17 @@ import 'package:oshinstar/modules/authentication/api/authentication.dart';
 import 'dart:convert';
 
 import 'package:oshinstar/modules/authentication/screens/phone_verification.dart';
+import 'package:oshinstar/widgets/action_blocked.dart';
 
 class PhoneNumberScreen extends StatefulWidget {
   final bool returning;
   final String? phone;
 
-  const PhoneNumberScreen({super.key, required this.returning, required this.phone});
+  const PhoneNumberScreen(
+      {super.key, required this.returning, required this.phone});
 
   @override
-  _PhoneNumberScreenState createState() =>
-      _PhoneNumberScreenState();
+  _PhoneNumberScreenState createState() => _PhoneNumberScreenState();
 }
 
 class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
@@ -24,9 +25,8 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
   String? _countryFlag;
   String _phoneNumber = "";
 
-
-  final bool _showGetHelp = false;
-  final bool _showLogOut = false;
+  bool _showGetHelp = false;
+  bool _showLogOut = false;
 
   @override
   void initState() {
@@ -81,14 +81,46 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
     });
   }
 
-  void _saveData(String phoneNumber) async {
-    String userId = await UserHiveManager().getUserId();
-    await AuthenticationApi.updateUser({
-      "userId": userId,
-      "phone": phoneNumber
-    });
+  void _saveData(String phoneNumber, String method) async {
+    dynamic userId = await HiveManager.readDataFromBox("userBox", "userId");
+    
+    await AuthenticationApi.updateUser(
+        {"userId": userId, "phone": phoneNumber});
+
+    await sendCode(method, userId, phoneNumber);
   }
 
+  /**
+   * method = call | sms
+   */
+  Future<void> sendCode(String method, String userId, String phone) async {
+    final response = await AuthenticationApi.sendPhoneCode(
+        {"userId": userId, "method": method, "phone": phone});
+
+        print(response["statusCode"]);
+
+    if (response["statusCode"] == 429) {
+      print("got here");
+      setState(() {
+        _showGetHelp = true;
+        _showLogOut = true;
+      });
+
+      showActionBlockedDialog(context);
+    } else {
+      print("got here");
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CodeVerificationScreen(
+            phoneNumber:
+                _phoneNumber.isEmpty ? widget.phone ?? "000" : _phoneNumber,
+               
+          ),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,13 +187,11 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
                   foregroundColor: Colors.white,
                 ),
                 onPressed: () {
-                  _saveData(_phoneNumber);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CodeVerificationScreen(phoneNumber: _phoneNumber.isEmpty ? widget.phone ?? "000" : _phoneNumber,),
-                    ),
-                  );
+                  _saveData(
+                      _phoneNumber.isEmpty
+                          ? widget.phone ?? "000"
+                          : _phoneNumber,
+                      "sms");
                 },
                 label: const Text('Send Verification Code'),
               ),
@@ -181,7 +211,11 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
                     foregroundColor: Colors.white,
                   ),
                   onPressed: () {
-                    // Implement your verification code sending logic here
+                    _saveData(
+                        _phoneNumber.isEmpty
+                            ? widget.phone ?? "000"
+                            : _phoneNumber,
+                        "sms");
                   },
                   label: Text('Send Code again to ${widget.phone}'),
                 ),

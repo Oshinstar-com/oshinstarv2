@@ -1,3 +1,4 @@
+import 'package:http/http.dart';
 import 'package:oshinstar/helpers/http.dart';
 
 abstract class AuthenticationApi {
@@ -18,5 +19,17 @@ abstract class AuthenticationApi {
     final response = await Http.get('v1/user/$userId');
 
     return response["body"];
+  }
+
+  static Future<Map<String, dynamic>> sendPhoneCode(Map<String, dynamic> body) async {
+    final response = await Http.post('v1/phone/verification', body);
+
+    return response;
+  }
+
+  static Future<Map<String, dynamic>> validatePhoneCode(Map<String, dynamic> body) async {
+    final response = await Http.post('v1/phone/validate', body);
+
+    return response;
   }
 }

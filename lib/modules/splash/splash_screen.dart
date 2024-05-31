@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:oshinstar/helpers/hive.dart';
 import 'package:oshinstar/modules/authentication/api/authentication.dart';
+import 'package:oshinstar/modules/authentication/screens/account_type.dart';
+import 'package:oshinstar/modules/authentication/screens/categories_picker.dart';
 import 'package:oshinstar/modules/authentication/screens/first_last_name.dart';
 import 'package:oshinstar/modules/authentication/screens/birth_gender.dart';
 import 'package:oshinstar/modules/authentication/screens/phone_number.dart';
 import 'package:oshinstar/modules/landing/landing_screen.dart';
+import 'package:oshinstar/modules/splash/api/initial_api.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -27,12 +31,25 @@ class _SplashScreenState extends State<SplashScreen>
     )..repeat();
 
     _checkUser();
+    _setInitialAppData();
+  }
+
+  Future<void> _setInitialAppData() async {
+
+    final appDataHiveManager = AppDataHiveManager();
+    await appDataHiveManager.initBox('appData');
+
+    final response = await InitialApi.fetchInitialData();
+
+    await appDataHiveManager.write('industries', response["industries"]);
   }
 
   Future<void> _checkUser() async {
     await Hive.initFlutter();
-    final box = await Hive.openBox('userBox');
-    final userId = box.get('userId');
+    final userHiveManager = UserHiveManager();
+    await userHiveManager.initBox('userBox');
+
+    final userId = await userHiveManager.readData('userId');
 
     if (userId != null) {
       final response = await AuthenticationApi.getUser(userId);
@@ -54,9 +71,18 @@ class _SplashScreenState extends State<SplashScreen>
           context,
           MaterialPageRoute(
               builder: (context) => PhoneNumberScreen(
-                    returning: !user["phone"].isEmpty,
-                    phone: user["phone"] ?? ""
-                  )),
+                  returning: !user["phone"].isEmpty,
+                  phone: user["phone"] ?? "")),
+        );
+      } else if (user['accountType'].isEmpty || user['accountType'] == null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const AccountTypeScreen()),
+        );
+      } else if (user['categories'].isEmpty) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const CategoriesPickerPage()),
         );
       } else {
         Navigator.pushReplacement(

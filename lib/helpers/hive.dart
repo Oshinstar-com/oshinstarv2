@@ -1,28 +1,34 @@
 import 'package:hive/hive.dart';
 
-
 abstract class HiveManager {
-  Box<dynamic>? userBox;
+  Box<dynamic>? _box;
 
-  HiveManager() {
-    _initHive();
-  }
-
-  Future<void> _initHive() async {
-    userBox = Hive.box('userBox');
+  Future<void> initBox(String boxName) async {
+    _box = await Hive.openBox(boxName);
   }
 
   Future<void> writeData(String key, dynamic value) async {
-    await userBox?.put(key, value);
+    await _box?.put(key, value);
   }
 
   dynamic readData(String key) {
-    return userBox?.get(key);
+    return _box?.get(key);
   }
 
   Future<void> setUserMetadata(String userId, String bearerToken) async {
-    await userBox?.put('userId', userId);
-    await userBox?.put('bearerToken', bearerToken);
+    await _box?.put('userId', userId);
+    await _box?.put('bearerToken', bearerToken);
+  }
+
+  Future<void> writeDataToBox(String box, String key, dynamic value) async {
+    final cbox = await Hive.openBox(box);
+    cbox.put(key, value);
+
+  }
+
+  static dynamic readDataFromBox(String box, String key) async {
+    final cbox = await Hive.openBox(box);
+    return cbox.get(key);
   }
 }
 
@@ -33,6 +39,16 @@ class UserHiveManager extends HiveManager {
   }
 
   Future<String> getUserId() async {
-    return await super.readData("userId");
+    return HiveManager.readDataFromBox("userBox", "userId");
+  }
+}
+
+class AppDataHiveManager extends HiveManager {
+  Future<void> write(String key, dynamic value) async {
+    await writeData(key, value);
+  }
+
+  dynamic read(String key) {
+    return readData(key);
   }
 }

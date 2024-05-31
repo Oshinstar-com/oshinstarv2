@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oshinstar/modules/authentication/screens/account_type.dart';
 import 'package:oshinstar/utils/themes/palette.dart';
 import 'package:oshinstar/widgets/pin_code_fields.dart';
 import 'package:websafe_svg/websafe_svg.dart';
@@ -68,7 +69,9 @@ class EmailVerification extends StatelessWidget {
                   foregroundColor: OshinPalette.white,
                   backgroundColor: OshinPalette.blue,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const AccountTypeScreen()));
+                },
                 child: const Text('Let\'s start to build your portfolio'),
               ),
               const SizedBox(height: 30),

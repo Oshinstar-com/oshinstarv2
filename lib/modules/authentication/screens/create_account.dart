@@ -19,6 +19,8 @@ class CreateAccountSignupScreen extends StatefulWidget {
 class _CreateAccountSignupScreenState extends State<CreateAccountSignupScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  
   final UserHiveManager hiveManager = UserHiveManager();
 
   bool isEmailValid = true;
@@ -65,7 +67,8 @@ class _CreateAccountSignupScreenState extends State<CreateAccountSignupScreen> {
     });
 
     final userId = response["body"]["userId"];
-    hiveManager.writeData('userId', userId);
+    hiveManager.writeDataToBox('userBox','userId', userId);
+    hiveManager.writeDataToBox('userBox','email', emailController.text);
 
     print(response["body"]);
 

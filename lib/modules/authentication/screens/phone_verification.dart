@@ -1,13 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:oshinstar/helpers/hive.dart';
+import 'package:oshinstar/modules/authentication/api/authentication.dart';
 import 'package:oshinstar/modules/authentication/screens/email_verification.dart';
+import 'package:oshinstar/widgets/error_snackbar.dart';
 import 'package:oshinstar/widgets/pin_code_fields.dart';
 
 class CodeVerificationScreen extends StatefulWidget {
-  const CodeVerificationScreen({super.key, required this.phoneNumber});
+  const CodeVerificationScreen({super.key, required this.phoneNumber, });
 
   final String phoneNumber;
+
 
   @override
   State<CodeVerificationScreen> createState() => _CodeVerificationScreenState();
@@ -74,20 +78,33 @@ class _CodeVerificationScreenState extends State<CodeVerificationScreen> {
                 child: const SizedBox(height: 20),
               ),
               Text(widget.phoneNumber),
-              
               const SizedBox(height: 20),
               NumberPinCodeField(
-                onChanged: (context, code) {
+                onChanged: (context, code) async {
                   if (code.length == 6) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const EmailVerification(email: 'bueno@yopmail.com'),
-                      ),
-                    );
+                    dynamic userId =
+                        await HiveManager.readDataFromBox("userBox", "userId");
+
+                        final String email = await HiveManager.readDataFromBox("userBox", "email");
+
+                    final response = await AuthenticationApi.validatePhoneCode(
+                        {"userId": userId, "code": code});
+
+                    if (response["statusCode"] == 200) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EmailVerification(
+                              email: email),
+                        ),
+                      );
+                    } else {
+                      showErrorSnackbar(
+                          context, "Incorrect auth code. Please try again.");
+                    }
                   }
                 },
-                key: ValueKey('code-input'),
+                key: const ValueKey('code-input'),
                 length: 6,
               ),
               Column(

@@ -96,7 +96,8 @@ class _BirthGenderScreenState extends State<BirthGenderScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 1.0,
-        title: const Text('Fill in your details'),
+        title: Image.asset("assets/oshinstar-text-logo.png", width: 150),
+        
         centerTitle: true,
       ),
       body: LayoutBuilder(
