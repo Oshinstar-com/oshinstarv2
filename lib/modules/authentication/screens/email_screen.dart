@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:oshinstar/modules/authentication/create_account.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:oshinstar/helpers/hive.dart';
+import 'package:oshinstar/modules/authentication/api/authentication.dart';
+import 'package:oshinstar/modules/authentication/screens/create_account.dart';
+import 'package:oshinstar/modules/authentication/cubit/authentication_cubit.dart';
+import 'package:oshinstar/modules/authentication/screens/login_screen.dart';
 import 'package:oshinstar/utils/themes/palette.dart';
+import 'package:websafe_svg/websafe_svg.dart';
 
 class EmailScreenSignup extends StatefulWidget {
   EmailScreenSignup({super.key});
@@ -11,6 +17,8 @@ class EmailScreenSignup extends StatefulWidget {
 
 class _EmailScreenSignupState extends State<EmailScreenSignup> {
   final TextEditingController emailController = TextEditingController();
+  final UserHiveManager hiveManager = UserHiveManager();
+
   bool isEmailValid = true;
 
   @override
@@ -37,12 +45,43 @@ class _EmailScreenSignupState extends State<EmailScreenSignup> {
     super.dispose();
   }
 
+  // Method to handle the button press
+  Future<void> _handleContinuePressed() async {
+    if (isEmailValid) {
+      final response =
+          await AuthenticationApi.checkEmail({"email": emailController.text});
+
+      if (response["statusCode"] == 404) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) =>
+                CreateAccountSignupScreen(email: emailController.text),
+          ),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => LoginScreen(email: emailController.text),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 1.0,
-        title: const Text('Welcome to Oshinstar'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text("Welcome to"),
+            const SizedBox(width: 5),
+            Image.asset("assets/oshinstar-text-logo.png", width:150)
+          ],
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -83,14 +122,11 @@ class _EmailScreenSignupState extends State<EmailScreenSignup> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
-                  onPressed: () => isEmailValid
-                      ? Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => CreateAccountSignupScreen(
-                                    email: emailController.text,
-                                  )))
-                      : null,
+                  onPressed: () {
+                   if (isEmailValid) {
+                    _handleContinuePressed();
+                   }
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
                         OshinPalette.blue, // Blue color for the button

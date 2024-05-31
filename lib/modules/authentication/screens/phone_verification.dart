@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:oshinstar/modules/authentication/email_verification.dart';
+import 'package:oshinstar/modules/authentication/screens/email_verification.dart';
 import 'package:oshinstar/widgets/pin_code_fields.dart';
 
 class CodeVerificationScreen extends StatefulWidget {
@@ -73,8 +73,8 @@ class _CodeVerificationScreenState extends State<CodeVerificationScreen> {
                 visible: _start != 0,
                 child: const SizedBox(height: 20),
               ),
-              // Text(widget.phoneNumber),
-              const Text('+18091111111'),
+              Text(widget.phoneNumber),
+              
               const SizedBox(height: 20),
               NumberPinCodeField(
                 onChanged: (context, code) {

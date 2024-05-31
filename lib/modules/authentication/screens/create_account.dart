@@ -1,6 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:oshinstar/modules/authentication/user_details_screen.dart';
+import 'package:oshinstar/helpers/hive.dart';
+import 'package:oshinstar/modules/authentication/api/authentication.dart';
+import 'package:oshinstar/modules/authentication/screens/first_last_name.dart';
 import 'package:oshinstar/utils/themes/palette.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,6 +19,7 @@ class CreateAccountSignupScreen extends StatefulWidget {
 class _CreateAccountSignupScreenState extends State<CreateAccountSignupScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final UserHiveManager hiveManager = UserHiveManager();
 
   bool isEmailValid = true;
   bool isPasswordVisible = false;
@@ -25,6 +28,7 @@ class _CreateAccountSignupScreenState extends State<CreateAccountSignupScreen> {
   void initState() {
     super.initState();
     emailController.addListener(_validateEmail);
+    emailController.text = widget.email;
   }
 
   void _validateEmail() {
@@ -42,6 +46,7 @@ class _CreateAccountSignupScreenState extends State<CreateAccountSignupScreen> {
   @override
   void dispose() {
     emailController.dispose();
+    passwordController.dispose();
     super.dispose();
   }
 
@@ -53,15 +58,28 @@ class _CreateAccountSignupScreenState extends State<CreateAccountSignupScreen> {
     }
   }
 
+  Future<void> _handleContinuePressed() async {
+    final response = await AuthenticationApi.updateUser({
+      "email": emailController.text,
+      "password": passwordController.text
+    });
+
+    final userId = response["body"]["userId"];
+    hiveManager.writeData('userId', userId);
+
+    print(response["body"]);
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => const FirstLastNameScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 1.0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
-        ),
         title: const Text('Create a Free account now'),
         centerTitle: true,
       ),
@@ -72,7 +90,7 @@ class _CreateAccountSignupScreenState extends State<CreateAccountSignupScreen> {
           children: [
             const SizedBox(height: 20),
             TextField(
-              controller: emailController..text = widget.email,
+              controller: emailController,
               decoration: const InputDecoration(
                 labelText: 'Enter your e-mail address',
                 border: UnderlineInputBorder(),
@@ -131,7 +149,7 @@ class _CreateAccountSignupScreenState extends State<CreateAccountSignupScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => UserDetailsSignupScreen())),
+                  onPressed: _handleContinuePressed,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: OshinPalette.blue,
                     foregroundColor: Colors.white,

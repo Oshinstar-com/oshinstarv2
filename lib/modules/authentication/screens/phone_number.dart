@@ -2,23 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:oshinstar/helpers/hive.dart';
+import 'package:oshinstar/modules/authentication/api/authentication.dart';
 import 'dart:convert';
 
-import 'package:oshinstar/modules/authentication/code_verification.dart';
+import 'package:oshinstar/modules/authentication/screens/phone_verification.dart';
 
-class PhoneVerificationSignup extends StatefulWidget {
+class PhoneNumberScreen extends StatefulWidget {
+  final bool returning;
+  final String? phone;
+
+  const PhoneNumberScreen({super.key, required this.returning, required this.phone});
+
   @override
-  _PhoneVerificationSignupState createState() =>
-      _PhoneVerificationSignupState();
+  _PhoneNumberScreenState createState() =>
+      _PhoneNumberScreenState();
 }
 
-class _PhoneVerificationSignupState extends State<PhoneVerificationSignup> {
+class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
   String _countryCode = "+1";
   String? _countryFlag;
   String _phoneNumber = "";
-  bool _showCodeAgain = false;
-  bool _showGetHelp = false;
-  bool _showLogOut = false;
+
+
+  final bool _showGetHelp = false;
+  final bool _showLogOut = false;
 
   @override
   void initState() {
@@ -73,10 +81,20 @@ class _PhoneVerificationSignupState extends State<PhoneVerificationSignup> {
     });
   }
 
+  void _saveData(String phoneNumber) async {
+    String userId = await UserHiveManager().getUserId();
+    await AuthenticationApi.updateUser({
+      "userId": userId,
+      "phone": phoneNumber
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Phone number'),
         centerTitle: true,
         elevation: 1.0,
@@ -137,10 +155,11 @@ class _PhoneVerificationSignupState extends State<PhoneVerificationSignup> {
                   foregroundColor: Colors.white,
                 ),
                 onPressed: () {
+                  _saveData(_phoneNumber);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CodeVerificationScreen(phoneNumber: _phoneNumber,),
+                      builder: (context) => CodeVerificationScreen(phoneNumber: _phoneNumber.isEmpty ? widget.phone ?? "000" : _phoneNumber,),
                     ),
                   );
                 },
@@ -149,7 +168,7 @@ class _PhoneVerificationSignupState extends State<PhoneVerificationSignup> {
             ),
             const SizedBox(height: 20),
             Visibility(
-              visible: _showCodeAgain,
+              visible: widget.returning,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(
                   maxWidth: 500,
@@ -164,7 +183,7 @@ class _PhoneVerificationSignupState extends State<PhoneVerificationSignup> {
                   onPressed: () {
                     // Implement your verification code sending logic here
                   },
-                  label: Text('Send Code again to $_phoneNumber'),
+                  label: Text('Send Code again to ${widget.phone}'),
                 ),
               ),
             ),

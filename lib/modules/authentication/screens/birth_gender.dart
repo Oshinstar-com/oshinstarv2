@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:oshinstar/modules/authentication/phone_verification_screen.dart';
+import 'package:hive/hive.dart';
+import 'package:oshinstar/modules/authentication/api/authentication.dart';
+import 'package:oshinstar/modules/authentication/screens/phone_number.dart';
 import 'package:oshinstar/utils/themes/palette.dart';
 
-class UserDetailsSignupScreen extends StatefulWidget {
-  const UserDetailsSignupScreen({super.key});
+class BirthGenderScreen extends StatefulWidget {
+  const BirthGenderScreen({super.key});
 
   @override
-  _UserDetailsSignupScreenState createState() =>
-      _UserDetailsSignupScreenState();
+  _BirthGenderScreenState createState() => _BirthGenderScreenState();
 }
 
-class _UserDetailsSignupScreenState extends State<UserDetailsSignupScreen> {
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
+class _BirthGenderScreenState extends State<BirthGenderScreen> {
   DateTime? selectedBirthdate;
   String? selectedGender;
+  String? userId;
 
   @override
   void initState() {
     super.initState();
+
+    _getUserIdFromHive();
   }
 
   @override
   void dispose() {
-    firstNameController.dispose();
-    lastNameController.dispose();
     super.dispose();
   }
 
@@ -48,18 +48,23 @@ class _UserDetailsSignupScreenState extends State<UserDetailsSignupScreen> {
     }
   }
 
-  void _printUserDetails() {
-    final String firstName = firstNameController.text;
-    final String lastName = lastNameController.text;
+  Future<void> _getUserIdFromHive() async {
+    final box = await Hive.openBox('userBox');
+    setState(() {
+      userId = box.get('userId');
+    });
+  }
+
+  void _saveData() async {
     final String birthdate = selectedBirthdate != null
         ? "${selectedBirthdate!.toLocal()}".split(' ')[0]
         : "Not selected";
     final String gender = selectedGender ?? "Not selected";
 
-    print("First Name: $firstName");
-    print("Last Name: $lastName");
-    print("Birthdate: $birthdate");
-    print("Gender: $gender");
+    if (userId != null) {
+      await AuthenticationApi.updateUser(
+          {"userId": userId, "birthdate": birthdate, "gender": gender});
+    }
   }
 
   void _showGenderPopup(BuildContext context) {
@@ -89,11 +94,8 @@ class _UserDetailsSignupScreenState extends State<UserDetailsSignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         elevation: 1.0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
-        ),
         title: const Text('Fill in your details'),
         centerTitle: true,
       ),
@@ -114,22 +116,6 @@ class _UserDetailsSignupScreenState extends State<UserDetailsSignupScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-                    TextField(
-                      controller: firstNameController,
-                      decoration: const InputDecoration(
-                        labelText: 'First Name',
-                        border: UnderlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: lastNameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Last Name',
-                        border: UnderlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 50),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -212,9 +198,11 @@ class _UserDetailsSignupScreenState extends State<UserDetailsSignupScreen> {
                         padding: const EdgeInsets.all(16.0),
                         child: ElevatedButton(
                           onPressed: () {
-                            _printUserDetails();
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => PhoneVerificationSignup()));
-
+                            _saveData();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const PhoneNumberScreen(returning: false, phone: null,)));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: OshinPalette.blue,

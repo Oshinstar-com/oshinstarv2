@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:oshinstar/modules/authentication/email_screen.dart';
+import 'package:oshinstar/modules/authentication/screens/email_screen.dart';
 import 'package:oshinstar/utils/themes/palette.dart';
 import 'package:oshinstar/utils/translation/translation.dart';
 import 'package:oshinstar/widgets/carousel.dart';
