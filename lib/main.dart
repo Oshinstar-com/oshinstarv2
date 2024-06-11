@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:oshinstar/modules/home/screens/home.dart';
+import 'package:oshinstar/modules/profile/screens/profile.dart';
 import 'package:oshinstar/modules/splash/splash_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -27,7 +29,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const SplashScreen(),
+      home:  HomeScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

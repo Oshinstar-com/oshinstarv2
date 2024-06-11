@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:oshinstar/helpers/hive.dart';
+import 'package:oshinstar/modules/home/screens/home.dart';
 import 'package:oshinstar/utils/themes/palette.dart';
 import 'package:oshinstar/widgets/error_snackbar.dart';
 import 'package:websafe_svg/websafe_svg.dart';
@@ -9,16 +10,22 @@ class CategoriesPickerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Create a GlobalKey for the CategoryListState
+    final GlobalKey<_CategoryListState> categoryListKey =
+        GlobalKey<_CategoryListState>();
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Image.asset("assets/oshinstar-text-logo.png", width: 150),
+        backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
         actions: [Icon(Icons.exit_to_app)],
       ),
       body: Column(
         children: [
-          const Expanded(
+          Expanded(
             child: SingleChildScrollView(
-              child: CategoriesView(),
+              child: CategoriesView(categoryListKey: categoryListKey),
             ),
           ),
           Container(
@@ -27,8 +34,10 @@ class CategoriesPickerPage extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () => {},
               style: ElevatedButton.styleFrom(
-                foregroundColor: OshinPalette.white,
-                backgroundColor: OshinPalette.blue,
+                foregroundColor: OshinPalette.blue,
+                backgroundColor: Colors.white,
+                shadowColor: Colors.transparent,
+                elevation: 0,
               ),
               child: const Text('Skip for now'),
             ),
@@ -37,7 +46,16 @@ class CategoriesPickerPage extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
             child: ElevatedButton(
-              onPressed: () => {},
+              onPressed: () {
+                final selectedCategories =
+                    categoryListKey.currentState?._selectedCategories;
+                if (selectedCategories != null) {
+                  print(selectedCategories);
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
+                } else {
+                  print("No categories selected.");
+                }
+              },
               style: ElevatedButton.styleFrom(
                 foregroundColor: OshinPalette.white,
                 backgroundColor: OshinPalette.blue,
@@ -52,7 +70,9 @@ class CategoriesPickerPage extends StatelessWidget {
 }
 
 class CategoriesView extends StatefulWidget {
-  const CategoriesView({super.key});
+  final GlobalKey<_CategoryListState> categoryListKey;
+
+  const CategoriesView({super.key, required this.categoryListKey});
 
   @override
   State<CategoriesView> createState() => _CategoriesViewState();
@@ -81,13 +101,13 @@ class _CategoriesViewState extends State<CategoriesView> {
 
   @override
   Widget build(BuildContext context) {
+    // Passing the GlobalKey to the CategoryList widget
     return Column(
       children: [
         const Text(
           'What industry are you engaged in?',
           style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
         ),
         const SizedBox(height: 20),
@@ -102,19 +122,12 @@ class _CategoriesViewState extends State<CategoriesView> {
           ),
         ),
         const SizedBox(height: 20),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: TextField(
-            decoration: InputDecoration(
-              hintText: 'Search categories',
-              prefixIcon: Icon(Icons.search),
-            ),
-          ),
-        ),
-        const SizedBox(height: 20),
-        _industries.isEmpty ? const CircularProgressIndicator() : CategoryList(
-          industries: _industries,
-        ),
+        _industries.isEmpty
+            ? const CircularProgressIndicator()
+            : CategoryList(
+                key: widget.categoryListKey, // Assign the GlobalKey here
+                industries: _industries,
+              ),
       ],
     );
   }
@@ -131,6 +144,8 @@ class CategoryList extends StatefulWidget {
 
 class _CategoryListState extends State<CategoryList> {
   List<Map<String, String>> _selectedCategories = [];
+
+  List<Map<String, String>> get selectedCategories => _selectedCategories;
 
   void _toggleCategory(Map<String, String> category) {
     setState(() {
@@ -184,10 +199,13 @@ class _CategoryListState extends State<CategoryList> {
                   child: Card(
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(color: Colors.blue)),
                     child: ExpansionTile(
-                      leading: WebsafeSvg.asset("assets/industries/beauty-and-fashion.svg"),
+                      backgroundColor: Colors.white,
+                      collapsedBackgroundColor: Colors.white,
+                      leading: WebsafeSvg.asset(
+                          "assets/industries/beauty-and-fashion.svg"),
                       tilePadding: const EdgeInsets.symmetric(horizontal: 16.0),
                       title: Text(industry['name']!),
                       trailing: const Icon(Icons.arrow_drop_down),
@@ -225,7 +243,7 @@ class _CategoryListState extends State<CategoryList> {
                     ),
                   ),
                 );
-        }).toList(),
+        }),
       ],
     );
   }

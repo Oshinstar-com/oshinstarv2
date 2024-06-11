@@ -131,7 +131,7 @@ class _BirthGenderScreenState extends State<BirthGenderScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                            "It allows us to match you to potential Talents or Business \ninterested in your profile")
+                            "It allows us to match you with potential Talents \nor Business interested in your profile.")
                       ],
                     ),
                     ListTile(
@@ -177,7 +177,7 @@ class _BirthGenderScreenState extends State<BirthGenderScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                            "It allows us to match you to potential Talents or Business \ninterested in your profile")
+                            "It allows us to match you with potential Talents \nor Business interested in your profile.")
                       ],
                     ),
                     ListTile(

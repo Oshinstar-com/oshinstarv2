@@ -43,10 +43,7 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-         title: Image.asset("assets/oshinstar-text-logo.png", width: 150),
-         actions: [Icon(Icons.exit_to_app)],
-        ),
+        appBar: AppBar(automaticallyImplyLeading: false,),
         body: SizedBox.expand(
           child: LayoutBuilder(builder: (context, viewportConstraints) {
             return SingleChildScrollView(

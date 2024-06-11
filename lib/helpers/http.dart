@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 abstract class Http {
-  static String apiUrl = "http://localhost:5000";
+  static String apiUrl = "https://a328-148-255-30-112.ngrok-free.app";
 
   static Future<Map<String, dynamic>> post(
       String route, Map<String, dynamic> body) async {
