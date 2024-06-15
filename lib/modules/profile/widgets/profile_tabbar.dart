@@ -1,10 +1,14 @@
 import 'dart:math';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:oshinstar/utils/themes/palette.dart';
+import 'package:shimmer/shimmer.dart';
 
 class RandomColorGrid extends StatelessWidget {
-  const RandomColorGrid({super.key});
+  final List<String> path;
+
+  const RandomColorGrid({super.key, required this.path});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +24,7 @@ class RandomColorGrid extends StatelessWidget {
             mainAxisSpacing: 8.0,
             crossAxisSpacing: 8.0,
           ),
-          itemCount: 8, // Number of squares
+          itemCount: path.length, // Number of squares
           itemBuilder: (context, index) {
             return Container(
               color: getRandomColor(),
@@ -32,7 +36,14 @@ class RandomColorGrid extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                     )
-                  : null,
+                  : CachedNetworkImage(
+                      imageUrl: path[index],
+                      placeholder: _placeholder,
+                      errorWidget: _errorWidget,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
             );
           },
         ),
@@ -47,6 +58,61 @@ class RandomColorGrid extends StatelessWidget {
       random.nextInt(256),
       random.nextInt(256),
       random.nextInt(256),
+    );
+  }
+}
+
+Widget _errorWidget(
+  BuildContext context,
+  String url,
+  dynamic error,
+) {
+  print("Error while loading");
+  return Container(
+    decoration: BoxDecoration(
+      shape: BoxShape.rectangle,
+    ),
+    child: Center(
+      child: Text(
+        '😢',
+      ),
+    ),
+  );
+}
+
+Widget _placeholder(
+  BuildContext context,
+  String url,
+) {
+  print("loading");
+  return TrendingShimmer(
+    child: Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.rectangle,
+        color: Colors.white,
+      ),
+    ),
+  );
+}
+
+class TrendingShimmer extends StatelessWidget {
+  const TrendingShimmer({
+    Key? key,
+    required this.child,
+  }) : super(key: key);
+
+  final Widget child;
+
+  // static final _log = Logger('trending/widgets: $TrendingShimmer');
+
+  @override
+  Widget build(BuildContext context) {
+    print("rebuilding widget");
+    // _log.finest('Rearmando widget');
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: child,
     );
   }
 }
@@ -78,9 +144,11 @@ class OshinTabBar extends StatelessWidget {
           onTap: onTap,
           controller: controller,
           isScrollable: true,
+          tabAlignment: TabAlignment.start,
           indicatorColor: OshinPalette.grey,
           indicatorSize: TabBarIndicatorSize.tab,
-          labelPadding: const EdgeInsets.symmetric(horizontal: 10), // Remove padding
+          labelPadding:
+              const EdgeInsets.symmetric(horizontal: 10.0), // Remove padding
           tabs: [
             const Tab(
               child: Align(

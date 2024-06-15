@@ -27,7 +27,9 @@ class _ProfileScreenState extends State<ProfileScreen>
   void initState() {
     _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() {
-      setState(() {}); // Rebuild when the tab changes
+      setState(() {
+        debugPrint('FUXCK');
+      }); // Rebuild when the tab changes
     });
     super.initState();
   }
@@ -65,7 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         draggableIconBackColor: Colors.white,
         style: BoxStyle.sheet,
         bodyBuilder: (sc, pos) => _body(sc, pos),
-        collapsedBody: _collapsedBody(),
+        collapsedBody: ProfileCard(),
         backdrop: Backdrop(
           body: _backdrop(true),
         ),
@@ -94,54 +96,26 @@ class _ProfileScreenState extends State<ProfileScreen>
         const SizedBox(
           height: 15,
         ),
-        OshinTabBar(
-          controller: _tabController,
-        ),
-        _buildTabContent(),
+        OshinTabBar(controller: _tabController),
+        // _buildTabContent(),
+        if (_tabController.index == 0)
+          const RandomColorGrid(
+            path:
+               [ 
+                "https://steamuserimages-a.akamaihd.net/ugc/1031833986817717601/48F50D22DFEB74696B7BC0EB8DDF3B7277D33DB7/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false",
+                "https://i.etsystatic.com/41114433/r/il/a4cbc6/4894655016/il_570xN.4894655016_or4m.jpg"
+               ]
+
+          ),
+        if (_tabController.index == 1)
+          const Center(child: Text('Content for Photostream')),
+        if (_tabController.index == 2)
+          const Center(child: Text('Content for Tracks')),
+        if (_tabController.index == 3)
+          const Center(child: Text('Content for Collections')),
+        Container()
       ],
     );
-  }
-
-  _collapsedBody() {
-    return Column(
-      children: [
-        ProfileCard(),
-        const SizedBox(
-          height: 15,
-        ),
-        const Divider(thickness: 0.5, height: 0.5),
-        AddPresentation(),
-        const Divider(thickness: 0.5, height: 0.5),
-        const SizedBox(
-          height: 15,
-        ),
-        const ProfileLoaders(loaders: [
-          {'value': 0.4},
-          {'value': 0.4},
-          {'value': 0.4},
-        ]),
-        const SizedBox(
-          height: 15,
-        ),
-        OshinTabBar(controller: _tabController,),
-        _buildTabContent(),
-      ],
-    );
-  }
-
-  Widget _buildTabContent() {
-    switch (_tabController.index) {
-      case 0:
-        return RandomColorGrid();
-      case 1:
-        return Center(child: Text('Content for Photostream'));
-      case 2:
-        return Center(child: Text('Content for Tracks'));
-      case 3:
-        return Center(child: Text('Content for Collections'));
-      default:
-        return Container();
-    }
   }
 
   _backdrop(bool hasAvatar) {

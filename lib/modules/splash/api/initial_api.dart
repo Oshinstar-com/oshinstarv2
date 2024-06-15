@@ -1,11 +1,9 @@
-import 'package:oshinstar/helpers/http.dart';
-
 abstract class InitialApi {
   static Future<Map<String, dynamic>> fetchInitialData() async {
     // final response = await Http.get('v1/initial');
 
     // return response;
-
+  
     return {
       "industries": [
         {

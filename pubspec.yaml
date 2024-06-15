@@ -29,6 +29,12 @@ dependencies:
   material_design_icons_flutter: ^7.0.7296
   shimmer: ^3.0.0
   cached_network_image: ^3.3.1
+  hydrated_bloc: ^9.1.5
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: 2.4.0
+  shared_preferences: ^2.2.3
+  local_auth: ^2.2.0
+
 
 dev_dependencies:
   flutter_test:
@@ -36,6 +42,19 @@ dev_dependencies:
 
   flutter_lints: ^4.0.0
 
+flutter_icons:
+  image_path_android: "assets/oshinstar-logo.png"
+  image_path_ios: "assets/Isologo-jpg-1024 1.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  adaptive_icon_background: "#ffffff"
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: "assets/oshinstar-logo.png"
+  android: true
+  ios: true
 
 flutter:
 

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:oshinstar/cubits/cubits.dart';
+import 'package:oshinstar/modules/home/screens/custom_drawer.dart';
 import 'package:oshinstar/modules/profile/screens/profile.dart';
 import 'package:oshinstar/modules/profile/widgets/user_avatar.dart';
-import 'package:websafe_svg/websafe_svg.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState();
 }
 
@@ -30,7 +33,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<UserCubit>().state;
+
     return Scaffold(
+      endDrawer:  CustomDrawer(
+        userName: "${user['firstName']} ${user['lastName']}" ?? "",
+        userEmail: user['email'] ?? "",
+        userAvatarUrl: "https://cdn.discordapp.com/attachments/871539767332986880/1038048692004991036/image.png?ex=6668da6e&is=666788ee&hm=8bd39f1b06f564ecdc1b70a32ae9ebfabb54e05068d239213b8b1f3cbd336000&",
+        accountType:  user['accountType'] ?? "",
+        isVerified: user['isEmailVerified'] ?? false,
+      ),
       appBar: AppBar(
         backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
@@ -40,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () => null,
         ),
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
               icon: const Icon(Icons.search_outlined, color: Colors.black),
@@ -52,10 +64,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.chat_bubble_outline_outlined, color: Colors.black),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.menu_rounded, color: Colors.black),
               onPressed: () {},
             ),
           ],

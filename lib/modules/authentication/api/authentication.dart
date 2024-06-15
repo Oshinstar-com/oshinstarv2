@@ -2,15 +2,29 @@ import 'package:http/http.dart';
 import 'package:oshinstar/helpers/http.dart';
 
 abstract class AuthenticationApi {
-  static Future<Map<String, dynamic>> updateUser(Map<String, dynamic> body) async {
+  static Future<Map<String, dynamic>> login(
+      String email, String password) async {
+    final response = await Http.post('v1/login', {"email": email, "password": password});
+
+    return response["body"];
+  }
+
+  static Future<Map<String, dynamic>> refreshToken(String refreshToken) async {
+    final response = await Http.post('v1/refresh', {"token": refreshToken });
+
+    return response;
+  }
+
+  static Future<Map<String, dynamic>> updateUser(
+      Map<String, dynamic> body) async {
     final response = await Http.post('v1/user', body);
 
     return response;
   }
 
-  static Future<Map<String, dynamic>> checkEmail(Map<String, dynamic> body) async {
+  static Future<Map<String, dynamic>> checkEmail(
+      Map<String, dynamic> body) async {
     final response = await Http.post('v1/user/email_exists', body);
-
 
     return response;
   }
@@ -21,13 +35,15 @@ abstract class AuthenticationApi {
     return response["body"];
   }
 
-  static Future<Map<String, dynamic>> sendPhoneCode(Map<String, dynamic> body) async {
+  static Future<Map<String, dynamic>> sendPhoneCode(
+      Map<String, dynamic> body) async {
     final response = await Http.post('v1/phone/verification', body);
 
     return response;
   }
 
-  static Future<Map<String, dynamic>> validatePhoneCode(Map<String, dynamic> body) async {
+  static Future<Map<String, dynamic>> validatePhoneCode(
+      Map<String, dynamic> body) async {
     final response = await Http.post('v1/phone/validate', body);
 
     return response;

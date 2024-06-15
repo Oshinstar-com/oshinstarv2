@@ -50,7 +50,7 @@ class CategoriesPickerPage extends StatelessWidget {
                 final selectedCategories =
                     categoryListKey.currentState?._selectedCategories;
                 if (selectedCategories != null) {
-                  print(selectedCategories);
+                  final List<String> categories = selectedCategories.map((e) => e['slug'] as String,).toList();
                   Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
                 } else {
                   print("No categories selected.");
