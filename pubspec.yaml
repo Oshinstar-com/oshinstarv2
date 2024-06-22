@@ -34,6 +34,12 @@ dependencies:
   flutter_native_splash: 2.4.0
   shared_preferences: ^2.2.3
   local_auth: ^2.2.0
+  # user:
+  #   path: packages/user
+
+  build_runner: ^2.4.11
+  web_socket_channel: ^3.0.0
+  pretty_qr_code: ^3.3.0
 
 
 dev_dependencies:
@@ -62,4 +68,12 @@ flutter:
   assets:
     - assets/
     - assets/industries/
+    
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat-VariableFont_wght.ttf
+        - asset: assets/fonts/Montserrat-Italic-VariableFont_wght.ttf
+          style: italic
+
   

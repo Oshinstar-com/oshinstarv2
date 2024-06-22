@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
+import 'package:oshinstar/cubits/cubits.dart';
 import 'package:oshinstar/modules/authentication/api/authentication.dart';
 import 'package:oshinstar/modules/authentication/screens/birth_gender.dart';
 import 'package:oshinstar/utils/themes/palette.dart';
@@ -19,15 +21,8 @@ class _FirstLastNameScreenState extends State<FirstLastNameScreen> {
   @override
   void initState() {
     super.initState();
-    _getUserIdFromHive();
   }
 
-  Future<void> _getUserIdFromHive() async {
-    final box = await Hive.openBox('userBox');
-    setState(() {
-      userId = box.get('userId');
-    });
-  }
 
   @override
   void dispose() {
@@ -36,7 +31,9 @@ class _FirstLastNameScreenState extends State<FirstLastNameScreen> {
     super.dispose();
   }
 
-  void _saveData() async {
+  void _saveData(Map<String, dynamic> user) async {
+    final userId = user["userId"];
+
     if (userId != null) {
       final String firstName = firstNameController.text;
       final String lastName = lastNameController.text;
@@ -58,6 +55,8 @@ class _FirstLastNameScreenState extends State<FirstLastNameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<UserCubit>().state;
+    
     return Scaffold(
       appBar: AppBar(
         elevation: 1.0,
@@ -92,7 +91,7 @@ class _FirstLastNameScreenState extends State<FirstLastNameScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
-                  onPressed: _saveData,
+                  onPressed: () => _saveData(user),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: OshinPalette.blue,
                     foregroundColor: Colors.white,

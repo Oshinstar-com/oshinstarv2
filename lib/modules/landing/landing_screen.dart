@@ -21,8 +21,8 @@ class _LandingScreenState extends State<LandingScreen> with TranslationMixin {
 
     items = [
       {
-        'title': 'authentication.slider.slide1.title',
-        'description': 'authentication.slider.slide1.description',
+        'title': 'Discover and be Discovered',
+        'description': 'With our Discover & Sofia get ready for the best visibility ever',
         'imgSrc': 'assets/slide_1.png',
       },
       {
@@ -70,7 +70,6 @@ class _LandingScreenState extends State<LandingScreen> with TranslationMixin {
         ),
       ),
       body: Column(
-
         children: [
           const SizedBox(height: 40),
           Image.asset(
@@ -97,7 +96,8 @@ class _LandingScreenState extends State<LandingScreen> with TranslationMixin {
               width: double.infinity,
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EmailScreenSignup())),
+                onPressed: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => EmailScreenSignup())),
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
                       OshinPalette.blue, // Blue color for the button
@@ -110,7 +110,22 @@ class _LandingScreenState extends State<LandingScreen> with TranslationMixin {
           ),
         ],
       ),
-      endDrawer: Text("yuh"),
+      endDrawer: Drawer(
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text("About"),
+            automaticallyImplyLeading: false,
+          ),
+          body: Column(
+            children: [
+              ExpansionTile(title: Text("Register")),
+              ExpansionTile(title: Text("Terms of Service")),
+              ExpansionTile(title: Text("Company")),
+              ExpansionTile(title: Text("Support")),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

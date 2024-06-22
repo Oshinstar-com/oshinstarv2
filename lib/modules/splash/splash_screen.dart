@@ -4,9 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:oshinstar/cubits/cubits.dart';
 import 'package:oshinstar/helpers/hive.dart';
+import 'package:oshinstar/helpers/http.dart';
 import 'package:oshinstar/modules/authentication/api/authentication.dart';
 import 'package:oshinstar/modules/authentication/screens/account_type.dart';
 import 'package:oshinstar/modules/authentication/screens/categories_picker.dart';
+import 'package:oshinstar/modules/authentication/screens/email_verification.dart';
 import 'package:oshinstar/modules/authentication/screens/first_last_name.dart';
 import 'package:oshinstar/modules/authentication/screens/birth_gender.dart';
 import 'package:oshinstar/modules/authentication/screens/phone_number.dart';
@@ -74,11 +76,9 @@ class _SplashScreenState extends State<SplashScreen>
       }
     }
 
-    await Hive.initFlutter();
-    final userHiveManager = UserHiveManager();
-    await userHiveManager.initBox('userBox');
-
-    final userId = await userHiveManager.readData('userId');
+    final user = context.read<UserCubit>().state;
+    final userId = user["userId"];
+    
 
     if (userId != null) {
       final response = await AuthenticationApi.getUser(userId);
@@ -93,14 +93,19 @@ class _SplashScreenState extends State<SplashScreen>
       } else if ((!user['phone'].isEmpty && user["isPhoneVerified"] == false) ||
           (user["phone"].isEmpty && user["isPhoneVerified"] == false)) {
         _navigateToScreen(
-          PhoneNumberScreen(returning: !user["phone"].isEmpty, phone: user["phone"] ?? ""),
+          PhoneNumberScreen(
+              returning: !user["phone"].isEmpty, phone: user["phone"] ?? ""),
         );
-      } else if (user['accountType'].isEmpty || user['accountType'] == null) {
+      } 
+      // else if (user['isEmailVerified'] == null || user['isEmailVerified'] == false) {
+      //   _navigateToScreen(EmailVerification(email: user['email']));
+      // }
+      else if (user['accountType'].isEmpty || user['accountType'] == null) {
         _navigateToScreen(const AccountTypeScreen());
       } else if (user['categories'].isEmpty) {
         _navigateToScreen(const CategoriesPickerPage());
       } else {
-        _navigateToScreen(LandingScreen());
+        _navigateToScreen(HomeScreen());
       }
     } else {
       Future.delayed(const Duration(seconds: 3), () {
@@ -111,7 +116,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<bool> _validateToken(String token) async {
     final response = await http.get(
-      Uri.parse('https://dcfe-179-53-44-76.ngrok-free.app/api/v1/user/me'),
+      Uri.parse('${Http.apiUrl}/v1/user/me'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -147,7 +152,8 @@ class _SplashScreenState extends State<SplashScreen>
               child: child,
             );
           },
-          child: Image.asset("assets/oshinstar-logo.png", height: 150, width: 150),
+          child:
+              Image.asset("assets/oshinstar-logo.png", height: 150, width: 150),
         ),
       ),
     );

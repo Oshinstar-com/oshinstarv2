@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
+import 'package:oshinstar/cubits/cubits.dart';
 import 'package:oshinstar/modules/authentication/api/authentication.dart';
 import 'package:oshinstar/modules/authentication/screens/phone_number.dart';
 import 'package:oshinstar/utils/themes/palette.dart';
@@ -14,13 +16,10 @@ class BirthGenderScreen extends StatefulWidget {
 class _BirthGenderScreenState extends State<BirthGenderScreen> {
   DateTime? selectedBirthdate;
   String? selectedGender;
-  String? userId;
 
   @override
   void initState() {
     super.initState();
-
-    _getUserIdFromHive();
   }
 
   @override
@@ -48,14 +47,10 @@ class _BirthGenderScreenState extends State<BirthGenderScreen> {
     }
   }
 
-  Future<void> _getUserIdFromHive() async {
-    final box = await Hive.openBox('userBox');
-    setState(() {
-      userId = box.get('userId');
-    });
-  }
 
-  void _saveData() async {
+  void _saveData(Map<String, dynamic> user) async {
+    final userId = user['userId'];
+
     final String birthdate = selectedBirthdate != null
         ? "${selectedBirthdate!.toLocal()}".split(' ')[0]
         : "Not selected";
@@ -199,7 +194,9 @@ class _BirthGenderScreenState extends State<BirthGenderScreen> {
                         padding: const EdgeInsets.all(16.0),
                         child: ElevatedButton(
                           onPressed: () {
-                            _saveData();
+                            final user = context.read<UserCubit>().state;
+                            
+                            _saveData(user);
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(

@@ -28,7 +28,6 @@ class _ProfileScreenState extends State<ProfileScreen>
     _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() {
       setState(() {
-        debugPrint('FUXCK');
       }); // Rebuild when the tab changes
     });
     super.initState();
@@ -67,7 +66,12 @@ class _ProfileScreenState extends State<ProfileScreen>
         draggableIconBackColor: Colors.white,
         style: BoxStyle.sheet,
         bodyBuilder: (sc, pos) => _body(sc, pos),
-        collapsedBody: ProfileCard(),
+        collapsedBody: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ProfileCard(),
+          ],
+        ),
         backdrop: Backdrop(
           body: _backdrop(true),
         ),

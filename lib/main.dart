@@ -34,8 +34,50 @@ class Oshinstar extends StatelessWidget {
       ],
       child: MaterialApp(
         theme: ThemeData(
+          fontFamily: 'Montserrat',
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
+          textTheme: const TextTheme(
+            bodyLarge: const TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w900), // Black font weight
+            bodyMedium: TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w900), // Black font weight
+            displayLarge: TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w900), // Black font weight
+            displayMedium: TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w900), // Black font weight
+            displaySmall: TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w900), // Black font weight
+            headlineMedium: TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w900), // Black font weight
+            headlineSmall: TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w900), // Black font weight
+            titleLarge: TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w900), // Black font weight
+            titleMedium: TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w900), // Black font weight
+            titleSmall: TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w900), // Black font weight
+            bodySmall: TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w900), // Black font weight
+            labelSmall: TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w900), // Black font weight
+          ).apply(
+            bodyColor: Colors.black, // Default color for all text
+            displayColor: Colors.black, // Default color for all display text
+          ),
           inputDecorationTheme: const InputDecorationTheme(
             enabledBorder: UnderlineInputBorder(
               borderSide:

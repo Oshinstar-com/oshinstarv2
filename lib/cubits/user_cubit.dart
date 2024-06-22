@@ -4,14 +4,18 @@ class UserCubit extends HydratedCubit<Map<String, dynamic>> {
   UserCubit() : super({});
 
   void setUserInfo(Map<String, dynamic> userInfo) {
-    emit(userInfo);
+    final currentState = state as Map<String, dynamic>;
+    final updatedState = Map<String, dynamic>.from(currentState);
+
+    userInfo.forEach((key, value) {
+      updatedState[key] = value;
+    });
+
+    emit(updatedState);
   }
 
   Future<void> logout(BuildContext context) async {
     Navigator.push(context, MaterialPageRoute(builder: (_) => LandingScreen()));
-    // Clear Hive userBox data
-    final userBox = await Hive.openBox('userBox');
-    await userBox.clear();
 
     // Remove JWT token from SharedPreferences
     final prefs = await SharedPreferences.getInstance();

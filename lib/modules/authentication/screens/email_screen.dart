@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:oshinstar/helpers/hive.dart';
+import 'package:oshinstar/cubits/cubits.dart';
+import 'package:oshinstar/models/User.dart';
 import 'package:oshinstar/modules/authentication/api/authentication.dart';
 import 'package:oshinstar/modules/authentication/screens/create_account.dart';
 import 'package:oshinstar/modules/authentication/cubit/authentication_cubit.dart';
@@ -17,7 +18,6 @@ class EmailScreenSignup extends StatefulWidget {
 
 class _EmailScreenSignupState extends State<EmailScreenSignup> {
   final TextEditingController emailController = TextEditingController();
-  final UserHiveManager hiveManager = UserHiveManager();
 
   bool isEmailValid = true;
 
@@ -46,7 +46,9 @@ class _EmailScreenSignupState extends State<EmailScreenSignup> {
   }
 
   // Method to handle the button press
-  Future<void> _handleContinuePressed() async {
+  Future<void> _handleContinuePressed(Map<String, dynamic> user) async {
+    final userId = user['userId'];
+
     if (isEmailValid) {
       final response =
           await AuthenticationApi.checkEmail({"email": emailController.text});
@@ -72,16 +74,11 @@ class _EmailScreenSignupState extends State<EmailScreenSignup> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<UserCubit>().state;
+
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text("Welcome to"),
-            const SizedBox(width: 5),
-            Image.asset("assets/oshinstar-text-logo.png", width:150)
-          ],
-        ),
+        title: Image.asset("assets/oshinstar-text-logo.png", width: 150),
         centerTitle: true,
       ),
       body: Padding(
@@ -123,9 +120,9 @@ class _EmailScreenSignupState extends State<EmailScreenSignup> {
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
                   onPressed: () {
-                   if (isEmailValid) {
-                    _handleContinuePressed();
-                   }
+                    if (isEmailValid) {
+                      _handleContinuePressed(user);
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:

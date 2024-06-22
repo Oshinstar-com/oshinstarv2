@@ -1,4 +1,3 @@
-import 'package:http/http.dart';
 import 'package:oshinstar/helpers/http.dart';
 
 abstract class AuthenticationApi {
@@ -48,4 +47,29 @@ abstract class AuthenticationApi {
 
     return response;
   }
+
+  static Future<Map<String, dynamic>> sendEmailCode(Map<String, dynamic> body) async {
+    final response = await Http.post('v1/verify_email', body);
+
+    return response;
+  }
+
+   static Future<Map<String, dynamic>> validateEmail(Map<String, dynamic> body) async {
+    final response = await Http.post('v1/validate_email', body);
+
+    return response;
+  }
+
+
+  static Future<Map<String, dynamic>> updatePassword(Map<String, dynamic> body) async {
+    final response = await Http.post('v3/auth/update_password', body);
+
+    return response;
+  } 
+
+   static Future<Map<String, dynamic>> updateBirthdate(Map<String, dynamic> body) async {
+    final response = await Http.post('v1/user/update_birthdate', body);
+
+    return response;
+  } 
 }

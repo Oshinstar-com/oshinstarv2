@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:oshinstar/cubits/cubits.dart';
 import 'package:oshinstar/helpers/hive.dart';
 import 'package:oshinstar/modules/authentication/api/authentication.dart';
 import 'package:oshinstar/modules/authentication/screens/email_verification.dart';
@@ -8,10 +10,12 @@ import 'package:oshinstar/widgets/error_snackbar.dart';
 import 'package:oshinstar/widgets/pin_code_fields.dart';
 
 class CodeVerificationScreen extends StatefulWidget {
-  const CodeVerificationScreen({super.key, required this.phoneNumber, });
+  const CodeVerificationScreen({
+    super.key,
+    required this.phoneNumber,
+  });
 
   final String phoneNumber;
-
 
   @override
   State<CodeVerificationScreen> createState() => _CodeVerificationScreenState();
@@ -54,6 +58,7 @@ class _CodeVerificationScreenState extends State<CodeVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+        final user = context.watch<UserCubit>().state;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Enter your code'),
@@ -82,20 +87,16 @@ class _CodeVerificationScreenState extends State<CodeVerificationScreen> {
               NumberPinCodeField(
                 onChanged: (context, code) async {
                   if (code.length == 6) {
-                    dynamic userId =
-                        await HiveManager.readDataFromBox("userBox", "userId");
-
-                        final String email = await HiveManager.readDataFromBox("userBox", "email");
 
                     final response = await AuthenticationApi.validatePhoneCode(
-                        {"userId": userId, "code": code});
+                        {"userId": user["userId"], "code": code});
 
                     if (response["statusCode"] == 200) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => EmailVerification(
-                              email: email),
+                          builder: (context) =>
+                              EmailVerification(email: user['email']),
                         ),
                       );
                     } else {

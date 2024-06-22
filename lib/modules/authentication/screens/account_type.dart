@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:oshinstar/helpers/hive.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:oshinstar/cubits/cubits.dart';
 import 'package:oshinstar/modules/authentication/api/authentication.dart';
 import 'package:oshinstar/modules/authentication/screens/categories_picker.dart';
+import 'package:oshinstar/modules/authentication/screens/location_screen.dart';
 import 'package:oshinstar/utils/themes/palette.dart';
 import 'package:oshinstar/widgets/error_snackbar.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,8 +25,8 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
     });
   }
 
-  void _onContinuePressed() async {
- dynamic userId = await HiveManager.readDataFromBox("userBox", "userId");
+  void _onContinuePressed(Map<String, dynamic> user) async {
+    final userId = user["userId"];
 
     if (_selectedAccountType != null) {
       await AuthenticationApi.updateUser({
@@ -34,7 +36,7 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
       });
 
       Navigator.push(context,
-          MaterialPageRoute(builder: (_) => const CategoriesPickerPage()));
+          MaterialPageRoute(builder: (_) => LocationSearchScreen()));
     } else {
       showErrorSnackbar(context, "Please select one of the options.");
     }
@@ -42,6 +44,8 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.read<UserCubit>().state;
+
     return Scaffold(
         appBar: AppBar(automaticallyImplyLeading: false,),
         body: SizedBox.expand(
@@ -64,7 +68,7 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.only(bottom: 20),
                       child: ElevatedButton(
-                        onPressed: _onContinuePressed,
+                        onPressed: () => _onContinuePressed(user),
                         style: ElevatedButton.styleFrom(
                           foregroundColor: OshinPalette.white,
                           backgroundColor: OshinPalette.blue,

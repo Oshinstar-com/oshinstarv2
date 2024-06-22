@@ -1,5 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:oshinstar/cubits/cubits.dart';
 import 'package:oshinstar/helpers/hive.dart';
 import 'package:oshinstar/modules/authentication/api/authentication.dart';
 import 'package:oshinstar/modules/authentication/screens/first_last_name.dart';
@@ -20,8 +22,6 @@ class _CreateAccountSignupScreenState extends State<CreateAccountSignupScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  
-  final UserHiveManager hiveManager = UserHiveManager();
 
   bool isEmailValid = true;
   bool isPasswordVisible = false;
@@ -66,10 +66,11 @@ class _CreateAccountSignupScreenState extends State<CreateAccountSignupScreen> {
       "password": passwordController.text
     });
 
-    final userId = response["body"]["userId"];
-    hiveManager.writeDataToBox('userBox','userId', userId);
-    hiveManager.writeDataToBox('userBox','email', emailController.text);
+    final userId = response["body"]["user"]["userId"];
 
+    context.read<UserCubit>().setUserInfo({'userId': userId});
+    context.read<UserCubit>().setUserInfo({'email': emailController.text});
+    
     print(response["body"]);
 
     Navigator.push(

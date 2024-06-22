@@ -4,6 +4,7 @@ import 'package:oshinstar/cubits/cubits.dart';
 import 'package:oshinstar/modules/home/screens/home.dart';
 import 'package:oshinstar/utils/themes/palette.dart';
 import 'package:oshinstar/modules/authentication/api/authentication.dart';
+import 'package:oshinstar/widgets/error_snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -32,7 +33,7 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(width: 5),
                 Text(
                   "Welcome back, $email",
-                  style: TextStyle(fontSize: 17),
+                  style: const TextStyle(fontSize: 17),
                 ),
               ],
             ),
@@ -48,13 +49,13 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 20),
             TextButton(
                 onPressed: () => null,
-                child: Text(
+                child: const Text(
                   "Forgot password?",
                   style: TextStyle(color: OshinPalette.blue),
                 )),
             TextButton(
                 onPressed: () => null,
-                child: Text("Contact Support",
+                child: const Text("Contact Support",
                     style: TextStyle(color: OshinPalette.blue))),
             const Spacer(),
             SafeArea(
@@ -75,11 +76,12 @@ class LoginScreen extends StatelessWidget {
                       prefs.setString('refreshToken', response['refreshToken']);
 
                       context.read<UserCubit>().setUserInfo(response["user"]);
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => HomeScreen()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const HomeScreen()));
                     } else {
-                      // Handle login failure
-                      print('Login failed: ${response}');
+                      showErrorSnackbar(context, "Incorrect credentials");
                     }
                   },
                   style: ElevatedButton.styleFrom(

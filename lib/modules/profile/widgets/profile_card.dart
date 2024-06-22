@@ -47,50 +47,20 @@ class ProfileCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 1),
-                const Row(
+                Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.location_pin,
                       size: 14,
                       color: Colors.grey,
                     ),
-                    SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Text(
-                      'San Francisco, United States',
-                      style: TextStyle(fontSize: 14),
+                      user["location"],
+                      style: const TextStyle(fontSize: 14),
                     ),
                   ],
                 ),
-                SizedBox(height: 50),
-                ElevatedButton(
-                    onPressed: () {
-                      final Map<String, dynamic> userInfo = {
-                        "images": [],
-                        "videos": [],
-                        "tracks": [],
-                        "collections": [],
-                        "_id": "6667d1f063728b3a0e575a87",
-                        "userId": "97ebed95-7ea5-4448-99c1-31db71e2798e",
-                        "email": "jdcoding03@gmail.com",
-                        "password":
-                            "\$2b\$10\$4hsXRgNvkdiktbG/nwYTSuUKM3iA5I8riOnfpq6ifBTH4BfwLuMv.",
-                        "firstName": "Iam",
-                        "lastName": "McFock",
-                        "gender": "Male",
-                        "birthdate": "2011-06-11T00:00:00.000Z",
-                        "phone": "8098411906",
-                        "location": "",
-                        "categories": ["hello-world-374", "ccdvfjategory-1"],
-                        "isPhoneVerified": true,
-                        "isEmailVerified": false,
-                        "attempts": 1,
-                        "canUpdatePhoneCode": true,
-                        "accountType": "star",
-                        "__v": 1
-                      };
-                      context.read<UserCubit>().setUserInfo(userInfo);
-                    },
-                    child: Text("update data"))
               ],
             ),
           ),

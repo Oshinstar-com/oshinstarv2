@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:oshinstar/cubits/cubits.dart';
 import 'package:oshinstar/helpers/hive.dart';
 import 'package:oshinstar/modules/authentication/api/authentication.dart';
 import 'dart:convert';
@@ -41,8 +43,8 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
     });
   }
 
-  void _saveData(String phoneNumber, String method) async {
-    dynamic userId = await HiveManager.readDataFromBox("userBox", "userId");
+  void _saveData(String phoneNumber, String method, Map<String, dynamic> user) async {
+    dynamic userId = user["userId"];
     
     await AuthenticationApi.updateUser(
         {"userId": userId, "phone": phoneNumber});
@@ -60,7 +62,6 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
         print(response["statusCode"]);
 
     if (response["statusCode"] == 429) {
-      print("got here");
       setState(() {
         _showGetHelp = true;
         _showLogOut = true;
@@ -68,7 +69,6 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
 
       showActionBlockedDialog(context);
     } else {
-      print("got here");
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -84,6 +84,8 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<UserCubit>().state;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -151,7 +153,7 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
                       _phoneNumber.isEmpty
                           ? widget.phone ?? "000"
                           : _phoneNumber,
-                      "sms");
+                      "sms", user);
                 },
                 label: const Text('Send Verification Code'),
               ),
@@ -175,7 +177,7 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
                         _phoneNumber.isEmpty
                             ? widget.phone ?? "000"
                             : _phoneNumber,
-                        "sms");
+                        "sms", user);
                   },
                   label: Text('Send Code again to ${widget.phone}'),
                 ),

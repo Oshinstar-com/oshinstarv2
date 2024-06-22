@@ -4,6 +4,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:oshinstar/cubits/cubits.dart';
 import 'package:oshinstar/modules/finance/finance.dart';
 import 'package:oshinstar/modules/profile/widgets/user_avatar.dart';
+import 'package:oshinstar/modules/settings/settings.dart';
 import 'package:oshinstar/utils/themes/palette.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -37,8 +38,7 @@ class CustomDrawer extends StatelessWidget {
               children: [
                 const SizedBox(height: 40),
                 const UserAvatarWidget(
-                  src:
-                      "https://cdn.discordapp.com/attachments/871539767332986880/1038048692004991036/image.png?ex=6668da6e&is=666788ee&hm=8bd39f1b06f564ecdc1b70a32ae9ebfabb54e05068d239213b8b1f3cbd336000&",
+                  src: "",
                   size: 75,
                   showBorder: true,
                   borderColor: Colors.white,
@@ -49,7 +49,7 @@ class CustomDrawer extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   userName,
-                  style: TextStyle(color: OshinPalette.blue, fontSize: 16),
+                  style: const TextStyle(color: OshinPalette.blue, fontSize: 16),
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -61,7 +61,7 @@ class CustomDrawer extends StatelessWidget {
                     if (!isVerified)
                       TextButton(
                         onPressed: () {},
-                        child: Text(
+                        child: const Text(
                           "(Verify now)",
                           style: TextStyle(color: OshinPalette.blue),
                         ),
@@ -74,14 +74,14 @@ class CustomDrawer extends StatelessWidget {
                   style: TextStyle(color: Colors.grey.shade700),
                 ),
                 const SizedBox(height: 4),
-                Row(
+                const Row(
                   children: [
                     Text(
                       "Switch to Star Pro I Account",
                       style: TextStyle(color: OshinPalette.blue),
                     ),
-                    const SizedBox(width: 4),
-                    const Icon(Icons.info_outline,
+                    SizedBox(width: 4),
+                    Icon(Icons.info_outline,
                         color: OshinPalette.blue, size: 16),
                   ],
                 ),
@@ -112,7 +112,10 @@ class CustomDrawer extends StatelessWidget {
           context.read<UserCubit>().logout(context);
           break;
           case 'Finance & Credit':
-          Navigator.push(context, MaterialPageRoute(builder: (_) => FinanceAuthenticateScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const FinanceAuthenticateScreen()));
+          case 'Settings':
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
+
         }
       },
     );

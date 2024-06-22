@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:oshinstar/cubits/cubits.dart';
 import 'package:oshinstar/helpers/hive.dart';
+import 'package:oshinstar/helpers/router.dart';
+import 'package:oshinstar/modules/authentication/api/authentication.dart';
 import 'package:oshinstar/modules/home/screens/home.dart';
 import 'package:oshinstar/utils/themes/palette.dart';
 import 'package:oshinstar/widgets/error_snackbar.dart';
@@ -8,8 +12,16 @@ import 'package:websafe_svg/websafe_svg.dart';
 class CategoriesPickerPage extends StatelessWidget {
   const CategoriesPickerPage({super.key});
 
+  void updateUser(List categories, String userId, BuildContext context) async {
+    final response = await AuthenticationApi.updateUser({"categories": categories, "userId": userId});
+    context.read<UserCubit>().setUserInfo(response["body"]);
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    final user = context.read<UserCubit>().state;
+    
     // Create a GlobalKey for the CategoryListState
     final GlobalKey<_CategoryListState> categoryListKey =
         GlobalKey<_CategoryListState>();
@@ -50,8 +62,14 @@ class CategoriesPickerPage extends StatelessWidget {
                 final selectedCategories =
                     categoryListKey.currentState?._selectedCategories;
                 if (selectedCategories != null) {
-                  final List<String> categories = selectedCategories.map((e) => e['slug'] as String,).toList();
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
+                  final List<String> categories = selectedCategories
+                      .map(
+                        (e) => e['slug'] as String,
+                      )
+                      .toList();
+                  updateUser(categories, user["userId"], context);
+
+                  AppRouter.route(context, const HomeScreen());
                 } else {
                   print("No categories selected.");
                 }
