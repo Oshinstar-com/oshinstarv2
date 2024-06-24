@@ -4,6 +4,8 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 import 'package:oshinstar/modules/splash/splash_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:oshinstar/modules/upload/cubit/cubit/upload_media_cubit.dart';
+import 'package:oshinstar/modules/upload/screens/customize_image_screen.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -89,7 +91,10 @@ class Oshinstar extends StatelessWidget {
             ),
           ),
         ),
-        home: const SplashScreen(),
+        home: BlocProvider(
+          create: (context) => UploadMediaCubit(),
+          child: const CustomizeImageScreen(),
+        ),
         debugShowCheckedModeBanner: false,
       ),
     );
